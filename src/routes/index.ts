@@ -3,11 +3,13 @@ import authRouter from './auth';
 import { ResultFunction } from '../helpers/utils';
 import { ReturnStatus } from '../types/generic';
 import authMiddleWare from '../middlewares/authMiddleware';
+import movieRouter from './movie';
 
 const apiRouter = Router();
 
 // define your routes
 apiRouter.use('/auth', authRouter);
+apiRouter.use('/movies', movieRouter)
 
 apiRouter.use('/hello', authMiddleWare, (req: Request, res: Response) => {
 	const data = ResultFunction(

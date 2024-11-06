@@ -23,5 +23,5 @@ app.use(errorHandler);
 
 app.listen(PORT, async () => {
 	await conn;
-	console.log(`Listening on ${PORT}`);
+	console.log(`Listening on localhost:${PORT}`);
 });
