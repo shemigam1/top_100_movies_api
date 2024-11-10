@@ -5,6 +5,7 @@ import { ReturnStatus } from '../../types/generic';
 import { comparePassword, hashPassword } from '../../helpers/hash';
 import User from '../../models/user';
 import { loginValidator, signupValidator } from '../../validators/auth';
+import Top100 from '../../models/top_100';
 
 class Auth {
 	public async login(input: ILogin) {
@@ -40,6 +41,7 @@ class Auth {
 				const data: LoginData = {
 					token: jwtToken,
 					user: {
+						id: user.id,
 						email,
 						name: user.name,
 					},
@@ -109,6 +111,10 @@ class Auth {
 					// console.log(newUser);
 
 					const { password, ...other } = newUser;
+					// const { _id } = other
+					// const newList = await Top100.create({ _id })
+					// console.log(newList);
+
 					// console.log(other);
 					// console.log(password);
 

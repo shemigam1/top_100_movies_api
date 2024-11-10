@@ -1,3 +1,5 @@
+import { Schema } from "mongoose";
+
 export interface ILogin {
 	email: string;
 	password: string;
@@ -5,6 +7,7 @@ export interface ILogin {
 
 export type LoginData = {
 	user: {
+		id: Schema.Types.ObjectId | string,
 		email: string;
 		name: string;
 	};
