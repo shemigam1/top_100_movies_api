@@ -34,6 +34,8 @@ const authMiddleWare = async (
 	if (!token) {
 		return res.status(response.code).json(response);
 	}
+	// console.log('token got here');
+
 
 	// verify jwt token
 	const payload = verifyJwt(token);
@@ -42,11 +44,22 @@ const authMiddleWare = async (
 		// check how JsonWebTokenError is handled in error handler
 		return next(payload);
 	}
+	// console.log('token got verified');
 
-	const id = (payload as JwtPayload).id;
+	const id = (payload as JwtPayload)._id;
+	// console.log(id);
+
 	// find user and add to res object
-	const user = await User.findById(id);
-	res.locals.user = user;
+	const user = await User.findOne({ _id: id })
+	if (user) {
+		const currentUser = {
+			id: id,
+			email: user.email,
+			name: user.name
+		}
+		res.locals.user = currentUser;
+	}
+	// console.log('token got into res.locals');
 
 	next();
 };

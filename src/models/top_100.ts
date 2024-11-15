@@ -1,11 +1,18 @@
 import mongoose, { Schema } from "mongoose";
-import { ITop100 } from "../types/movie";
+import { IList } from "../types/movie";
 import Movie from "./movie";
 
-const Top100Schema = new Schema<ITop100>({
+const Top100Schema = new Schema<IList>({
     userId: { type: Schema.Types.ObjectId, required: true, ref: 'User', unique: true },
-    top_100: { type: [{}], required: true, default: [] }
+    list: {
+        type: [{
+            // local_id: {type: Schema.Types.ObjectId, ref: 'Movie'},
+            api_id: { type: Number, ref: 'Movie' },
+            rank: { type: Number }
+        }]
+
+    }
 })
 
-const Top100 = mongoose.model<ITop100>('Top100', Top100Schema)
+const Top100 = mongoose.model<IList>('Top100', Top100Schema)
 export default Top100

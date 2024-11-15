@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { IAddMovie, IGetList, ISearchMovie, IUpdateMovie } from '../types/movie'
+import { IAddMovie, IDiscover, IGetList, IRank, ISearchMovie, IUpdateMovie } from '../types/movie'
 import { movieFactory } from '../services/factories'
 
 export const searchMovieController = async (
@@ -26,14 +26,15 @@ export const addMovieToListController = async (
     next: NextFunction
 ) => {
     const input: IAddMovie = {
-        userId: req.body.userId,
-        originalMovieTitle: req.body.originalMovieTitle
+        api_id: req.body.api_id,
+        user: res.locals.user
     }
 
     const response = await movieFactory().addMovieToList(input)
-    // console.log(response.data);
+    // console.log(await res.locals.user);
 
     return res.status(response.code).json(response);
+    // return res.status(200).json({ error: "error" })
 }
 
 export const removeMovieFromListController = async (
@@ -41,10 +42,9 @@ export const removeMovieFromListController = async (
     res: Response,
     next: NextFunction
 ) => {
-    const input: IUpdateMovie = {
-        userId: req.body.userId,
+    const input: IAddMovie = {
         api_id: req.body.api_id,
-        update: { deleted: true }
+        user: res.locals.user
     }
 
     const response = await movieFactory().removeMovieFromList(input)
@@ -57,9 +57,53 @@ export const getListController = async (
     next: NextFunction
 ) => {
     const input: IGetList = {
-        userId: req.body.userId,
+        user: res.locals.user,
     }
 
     const response = await movieFactory().getList(input)
+    return res.status(response.code).json(response);
+}
+
+
+export const discoverController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const input: IDiscover = {
+        page: req.body.page,
+    }
+
+    const response = await movieFactory().discover(input)
+    return res.status(response.code).json(response);
+}
+
+export const rankController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const input: IRank = {
+        user: res.locals.user,
+        api_id: req.body.api_id,
+        new_rank: req.body.new_rank
+    }
+
+    const response = await movieFactory().rank(input)
+    // return res.status(response.code).json(response);
+}
+
+
+export const getMovieDetailsController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const input: IAddMovie = {
+        api_id: req.body.api_id,
+        user: res.locals.user
+    }
+
+    const response = await movieFactory().getMovieDetails(input)
     return res.status(response.code).json(response);
 }

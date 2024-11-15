@@ -1,14 +1,14 @@
 import mongoose, { Schema } from "mongoose";
-import { IMovieResult } from "../types/movie";
+import { ICache } from "../types/movie";
 
-const MovieSchema: Schema = new Schema<IMovieResult>({
+const MovieSchema: Schema = new Schema<ICache>({
     // adult: { type: Boolean },
     // backdrop_path: { type: String },
-    genre_ids: { type: [Number] },
+    // genre_ids: { type: [Number] },
     api_id: { type: Number, required: true },
-    original_language: { type: String },
-    original_title: { type: String },
-    overview: { type: String },
+    // original_language: { type: String },
+    // original_title: { type: String },
+    // overview: { type: String },
     // popularity: { type: Number },
     poster_path: { type: String },
     release_date: { type: String },
@@ -19,5 +19,5 @@ const MovieSchema: Schema = new Schema<IMovieResult>({
 
 })
 
-const Movie = mongoose.model<IMovieResult>('Movie', MovieSchema)
-export default Movie
+const MovieModel = mongoose.model<ICache>('Movie', MovieSchema)
+export default MovieModel
