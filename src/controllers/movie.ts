@@ -90,7 +90,7 @@ export const rankController = async (
     }
 
     const response = await movieFactory().rank(input)
-    // return res.status(response.code).json(response);
+    return res.status(response.code).json(response);
 }
 
 

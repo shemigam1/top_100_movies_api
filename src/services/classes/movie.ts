@@ -68,6 +68,8 @@ class Movie {
       const list = await Top100.findOne({ userId: user.id })
       let listLength
       if (list) {
+
+
         // console.log('-------list', list);
 
         let existingMovie = list.list.filter(movie => movie.api_id === api_id)
@@ -90,6 +92,9 @@ class Movie {
             null
           );
         }
+        // check cache
+        // const inCache = MovieModel.findOne({ userId: user.id })
+
 
         list.list.push({ api_id, rank: listLength + 1 })
         const top100List = await Top100.findOneAndUpdate({ userId: user.id }, { list: list.list })
@@ -279,7 +284,56 @@ class Movie {
 
 
   public async rank(input: IRank) {
+    try {
+      const { user, api_id, new_rank } = input
 
+      const existingUser = await Top100.findOne({ userId: user.id })
+      if (existingUser) {
+        let temp
+        const existingMovie = existingUser.list.filter((movie) => movie.api_id === api_id)[0]
+        if (existingMovie.rank === new_rank) {
+          return ResultFunction(
+            false,
+            'rank change invalid',
+            422,
+            ReturnStatus.BAD_REQUEST,
+            null
+          );
+        }
+        const movieToBeSwitched = existingUser.list.filter((movie) => movie.rank === new_rank)[0]
+        temp = existingMovie.rank
+        existingMovie.rank = movieToBeSwitched.rank
+        movieToBeSwitched.rank = temp
+        existingUser.list.sort((a, b) => a.rank - b.rank)
+
+        const top100List = await Top100.findOneAndUpdate({ userId: user.id }, { list: existingUser.list })
+
+        return ResultFunction(
+          true,
+          'rank updated sucessfully',
+          200,
+          ReturnStatus.OK,
+          existingUser.list
+        );
+
+      } else {
+        return ResultFunction(
+          false,
+          'user doesnt exist',
+          422,
+          ReturnStatus.BAD_REQUEST,
+          null
+        );
+      }
+    } catch (error) {
+      return ResultFunction(
+        false,
+        'something went wrong',
+        422,
+        ReturnStatus.NOT_OK,
+        null
+      );
+    }
   }
 }
 

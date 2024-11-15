@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addMovieToListController, discoverController, getListController, getMovieDetailsController, removeMovieFromListController, searchMovieController } from "../controllers/movie";
+import { addMovieToListController, discoverController, getListController, getMovieDetailsController, rankController, removeMovieFromListController, searchMovieController } from "../controllers/movie";
 import authMiddleWare from "../middlewares/authMiddleware";
 
 const movieRouter = Router()
@@ -10,6 +10,6 @@ movieRouter.post('/add', authMiddleWare, addMovieToListController)
 movieRouter.delete('/remove', authMiddleWare, removeMovieFromListController)
 movieRouter.get('/discover', authMiddleWare, discoverController)
 movieRouter.get('/details', authMiddleWare, getMovieDetailsController)
-movieRouter.put('/rank', authMiddleWare, discoverController)
+movieRouter.put('/rank', authMiddleWare, rankController)
 
 export default movieRouter
