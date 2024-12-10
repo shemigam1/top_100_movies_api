@@ -23,13 +23,24 @@ class Movie {
     try {
       const { movieTitle, language, page, include_adult } = input
       try {
-
+        const cache = await MovieModel.find({ title: movieTitle })
+        if (cache) {
+          return ResultFunction(
+            true,
+            'data fetched sucessfully',
+            200,
+            ReturnStatus.OK,
+            cache
+          );
+        }
         const url = search_serializer(input)
         const res = await axios.get(url, options)
 
         const data = res.data.results
 
         const returnData = formatData(data)
+
+        await MovieModel.create(returnData)
         return ResultFunction(
           true,
           'data fetched sucessfully',
@@ -65,59 +76,60 @@ class Movie {
     try {
       const { api_id, user } = input
 
-      const list = await Top100.findOne({ userId: user.id })
-      let listLength
-      if (list) {
-
-
-        // console.log('-------list', list);
-
-        let existingMovie = list.list.filter(movie => movie.api_id === api_id)
-        if (existingMovie.length > 0) {
-          return ResultFunction(
-            false,
-            'movie exists in list already',
-            422,
-            ReturnStatus.BAD_REQUEST,
-            null
-          );
-        }
-        listLength = list.list.length
-        if (listLength >= 100) {
-          return ResultFunction(
-            false,
-            'top100 list is full',
-            422,
-            ReturnStatus.BAD_REQUEST,
-            null
-          );
-        }
-        // check cache
-        // const inCache = MovieModel.findOne({ userId: user.id })
-
-
-        list.list.push({ api_id, rank: listLength + 1 })
-        const top100List = await Top100.findOneAndUpdate({ userId: user.id }, { list: list.list })
+      const listCount = await Top100.find({ userId: user.id }).countDocuments()
+      if (listCount >= 100) {
+        return ResultFunction(
+          false,
+          'top100 list is full',
+          422,
+          ReturnStatus.BAD_REQUEST,
+          null
+        );
+      }
+      const existingMovie = await Top100.findOne({ userId: user.id, api_id: api_id })
+      if (existingMovie) {
+        return ResultFunction(
+          false,
+          'movie exists in list already',
+          422,
+          ReturnStatus.BAD_REQUEST,
+          null
+        );
+      }
+      const inCache = await MovieModel.findOne({ api_id: api_id })
+      if (inCache) {
+        const inCacheId = inCache._id
+        const movie = await Top100.create({ userId: user.id, movieId: inCacheId, rank: listCount + 1 })
 
         return ResultFunction(
           true,
           'movie added sucessfully',
           200,
           ReturnStatus.OK,
-          list.list
+          movie
         );
       } else {
-        const top100List = await Top100.create({ userId: user.id, list: [{ api_id, rank: 1 }] })
+        const url = `https://api.themoviedb.org/3/movie/${api_id}?language=en-US`
+        const res = await axios.get(url, options)
+
+        const data = res.data
+
+        const returnData = formatDetails(data)
+        const inCache = await MovieModel.create(returnData)
+        const movie = await Top100.create({ userId: user.id, movieId: inCache._id, rank: listCount + 1 })
+
         return ResultFunction(
           true,
           'movie added sucessfully',
           200,
           ReturnStatus.OK,
-          top100List
+          movie
         );
       }
 
     } catch (error) {
+      console.log(error);
+
       return ResultFunction(
         false,
         'something went wrong',
@@ -132,37 +144,15 @@ class Movie {
     try {
       const { api_id, user } = input
 
-      const list = await Top100.findOne({ userId: user.id })
-      if (list) {
-        let existingMovie = list.list.filter(movie => movie.api_id === api_id)
-        if (existingMovie.length <= 0) {
-          return ResultFunction(
-            false,
-            'movie is not in list',
-            422,
-            ReturnStatus.BAD_REQUEST,
-            null
-          );
-        }
+      await Top100.findOneAndDelete({ userId: user.id, api_id: api_id })
 
-        const newList = list.list.filter((movie) => movie.api_id !== api_id)
-        const top100List = await Top100.findOneAndUpdate({ userId: user.id }, { list: newList })
-
-        return ResultFunction(
-          true,
-          'movie removed sucessfully',
-          200,
-          ReturnStatus.OK,
-          newList
-        );
-      } else
-        return ResultFunction(
-          false,
-          'something went wrong',
-          422,
-          ReturnStatus.NOT_OK,
-          []
-        );
+      return ResultFunction(
+        true,
+        'movie removed sucessfully',
+        200,
+        ReturnStatus.OK,
+        null
+      );
 
 
     } catch (error) {
@@ -180,7 +170,7 @@ class Movie {
     try {
       const { user } = input
 
-      const top100List = await Top100.findOne({ userId: user.id })
+      const top100List = await Top100.find({ userId: user.id }).populate('movieId').exec()
       if (top100List) {
         return ResultFunction(
           true,
@@ -192,13 +182,14 @@ class Movie {
       } else {
         return ResultFunction(
           false,
-          'something went wrong',
+          'something went wrong, no list',
           422,
           ReturnStatus.NOT_OK,
           null
         );
       }
     } catch (error) {
+
       return ResultFunction(
         false,
         'something went wrong',
@@ -285,13 +276,14 @@ class Movie {
 
   public async rank(input: IRank) {
     try {
-      const { user, api_id, new_rank } = input
+      const { user, old_rank, new_rank } = input
 
-      const existingUser = await Top100.findOne({ userId: user.id })
-      if (existingUser) {
-        let temp
-        const existingMovie = existingUser.list.filter((movie) => movie.api_id === api_id)[0]
-        if (existingMovie.rank === new_rank) {
+      const existingMovie = await Top100.findOne({ userId: user.id, rank: old_rank })
+      console.log(existingMovie);
+
+      if (existingMovie) {
+        let temp = existingMovie.rank
+        if (temp === new_rank) {
           return ResultFunction(
             false,
             'rank change invalid',
@@ -300,32 +292,29 @@ class Movie {
             null
           );
         }
-        const movieToBeSwitched = existingUser.list.filter((movie) => movie.rank === new_rank)[0]
-        temp = existingMovie.rank
-        existingMovie.rank = movieToBeSwitched.rank
-        movieToBeSwitched.rank = temp
-        existingUser.list.sort((a, b) => a.rank - b.rank)
+        const movie1 = await Top100.findOneAndUpdate({ userId: user.id, rank: old_rank }, { rank: new_rank })
+        const movie2 = await Top100.findOneAndUpdate({ userId: user.id, rank: new_rank }, { rank: temp })
 
-        const top100List = await Top100.findOneAndUpdate({ userId: user.id }, { list: existingUser.list })
-
+        console.log(movie1);
+        console.log(movie2);
         return ResultFunction(
           true,
           'rank updated sucessfully',
           200,
           ReturnStatus.OK,
-          existingUser.list
-        );
-
-      } else {
-        return ResultFunction(
-          false,
-          'user doesnt exist',
-          422,
-          ReturnStatus.BAD_REQUEST,
           null
         );
+      } else {
+
+        return ResultFunction(
+          false,
+          'movie doesnt exist',
+          422,
+          ReturnStatus.BAD_REQUEST,
+          null)
       }
     } catch (error) {
+
       return ResultFunction(
         false,
         'something went wrong',

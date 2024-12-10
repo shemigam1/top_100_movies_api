@@ -1,0 +1,3 @@
+#!/bin/bash
+npx newman run movie_api.postman_collection.json -n 2 -r htmlextra
+npx newman run movie_api.postman_collection.json -n 2 -r htmlextra

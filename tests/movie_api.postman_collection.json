@@ -1,0 +1,818 @@
+{
+	"info": {
+		"_postman_id": "2a9ed5e3-f2df-4aa2-85b8-0c72b03aa09a",
+		"name": "movie_api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39517923"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.token).to.exist;\r",
+							"    pm.expect(responseData.user_id).to.exist;\r",
+							"    pm.expect(responseData.email).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Token is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should be a non-empty string\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"User_id is a positive integer\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData.user_id).to.exist.and.to.be.a('number').and.to.be.greaterThan(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"sayo1\",\r\n    \"email\": \"sayo1@mail.com\",\r\n    \"password\": \"semilore\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields for authentication\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.property('data');\r",
+							"    pm.expect(responseData.data).to.have.property('token');\r",
+							"    pm.expect(responseData.data).to.have.property('user');\r",
+							"    pm.expect(responseData.data.user).to.have.property('id');\r",
+							"    pm.expect(responseData.data.user).to.have.property('email');\r",
+							"    pm.expect(responseData.data.user).to.have.property('name');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response contains a valid JWT token\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"\r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData).to.have.property('data');\r",
+							"    pm.expect(responseData.data).to.have.property('token');\r",
+							"  pm.expect(responseData.data.token).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"// Stores the JWT token in an environment or global variable\r",
+							"var token = pm.response.json().data.token;\r",
+							"pm.globals.set(\"Bearer\", token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzQ5ODg0ZWMyODY3NDFmNmQ3NTFhNDciLCJpYXQiOjE3MzI4NzIyODgsImV4cCI6MTczMjg3NTg4OH0.saHRLVnxDeMjzjp5duaD78F5cELndYvnRFPYEAVbumA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"sayo1@mail.com\",\r\n    \"password\": \"semilore\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "searchMovie",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response schema includes expected fields for a movie search\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data).to.be.an('array');\r",
+							"    pm.expect(responseData.data[0]).to.be.an('object');\r",
+							"    pm.expect(responseData.data[0]).to.include.all.keys('title', 'release_date', 'api_id', 'poster_path');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response status code is not 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.not.equal(200);\r",
+							"  pm.expect(pm.response.data).to.equal('null')\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Bearer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2M2M5Nzk4MTg1ZWIzNDAxNTM5NDgiLCJpYXQiOjE3MzE2NTE5NjIsImV4cCI6MTczMTY1NTU2Mn0.Lxlyd-APKpNZNUIqZEj4mIMkchp7hVtxVm0xUKckWFk",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"movieTitle\": \"shawshank\",\r\n    \"language\": \"en-US\",\r\n    \"page\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/movies/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"movies",
+						"search"
+					],
+					"query": [
+						{
+							"key": "movieTitle",
+							"value": "shawshank",
+							"disabled": true
+						},
+						{
+							"key": "include_adult",
+							"value": "false",
+							"disabled": true
+						},
+						{
+							"key": "language",
+							"value": "en-US",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addMovie",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response schema for the added movie\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data).to.be.an('array');\r",
+							"    pm.expect(responseData.data[0]).to.have.property('api_id');\r",
+							"    pm.expect(responseData.data[0]).to.have.property('rank');\r",
+							"    pm.expect(responseData.data[0]).to.have.property('_id');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response status code is not 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.not.equal(200);\r",
+							"  pm.expect(pm.response.data).to.equal('null')\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Bearer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2M2M5Nzk4MTg1ZWIzNDAxNTM5NDgiLCJpYXQiOjE3MzE2MDg5MzMsImV4cCI6MTczMTYxMjUzM30.KH6aimyEjXac6a1oAmn1udmzIDlQ54q11YmSj8zbcWg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"api_id\": 97\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/movies/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"movies",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteMovie",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Successful deletion response schema is valid\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+							"    pm.expect(responseData.success).to.exist.and.to.be.a('boolean');\r",
+							"    pm.expect(responseData.data).to.exist.and.to.be.a('empty array');\r",
+							"});\r",
+							"pm.test(\"Response status code is not 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.not.equal(200);\r",
+							"  pm.expect(pm.response.data).to.equal('null')\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Bearer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2M2M5Nzk4MTg1ZWIzNDAxNTM5NDgiLCJpYXQiOjE3MzE2MDg5MzMsImV4cCI6MTczMTYxMjUzM30.KH6aimyEjXac6a1oAmn1udmzIDlQ54q11YmSj8zbcWg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"api_id\": 97\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/movies/remove",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"movies",
+						"remove"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required schema for movies\", function () {\r",
+							"    const responseData = pm.response.json().data;\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object')\r",
+							"    pm.expect(responseData.list).to.be.an('array').and.to.have.length.above(-1);\r",
+							"    \r",
+							"    responseData.list.forEach(function(movie) {\r",
+							"        pm.expect(movie).to.have.property('_id').that.is.a('string');\r",
+							"        pm.expect(movie).to.have.property('api_id').that.is.a('number');\r",
+							"        pm.expect(movie).to.have.property('rank').that.is.a('number');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Bearer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2M2M5Nzk4MTg1ZWIzNDAxNTM5NDgiLCJpYXQiOjE3MzE2NTU2OTEsImV4cCI6MTczMTY1OTI5MX0.qGjWGlaun0Q893descpgwooSpGEqHnIMR_lvZ304lKM",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/movies/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"movies",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields - api_id, title, poster_path, and release_date\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    responseData.data.forEach(function(movie) {\r",
+							"        pm.expect(movie).to.have.property('api_id');\r",
+							"        pm.expect(movie).to.have.property('title');\r",
+							"        pm.expect(movie).to.have.property('poster_path');\r",
+							"        pm.expect(movie).to.have.property('release_date');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Api_id is a non-negative integer\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData.data).to.be.an('array');\r",
+							"  responseData.data.forEach(function(movie) {\r",
+							"    pm.expect(movie.api_id).to.be.a('number').and.to.be.at.least(0);\r",
+							"  });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Title and poster_path are non-empty strings\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData.data).to.be.an('array').that.is.not.empty;\r",
+							"  \r",
+							"  responseData.data.forEach(function(movie) {\r",
+							"    pm.expect(movie.title).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Title should not be empty\");\r",
+							"    pm.expect(movie.poster_path).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Poster path should not be empty\");\r",
+							"  });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Bearer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/movies/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"movies",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "rank",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 300ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(300);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.property('success');\r",
+							"    pm.expect(responseData).to.have.property('message');\r",
+							"    pm.expect(responseData).to.have.property('code');\r",
+							"    pm.expect(responseData).to.have.property('returnStatus');\r",
+							"    pm.expect(responseData).to.have.property('data');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate the data array schema\", function () {\r",
+							"    const responseData = pm.response.json().data;\r",
+							"    \r",
+							"    pm.expect(responseData.data).to.be.an('array').and.to.have.lengthOf.at.least(1, \"Array should not be empty\");\r",
+							"\r",
+							"    responseData.data.forEach(function(item) {\r",
+							"        pm.expect(item).to.have.property('api_id');\r",
+							"        pm.expect(item).to.have.property('rank');\r",
+							"        pm.expect(item).to.have.property('_id');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Bearer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2M2M5Nzk4MTg1ZWIzNDAxNTM5NDgiLCJpYXQiOjE3MzE2NTU2OTEsImV4cCI6MTczMTY1OTI5MX0.qGjWGlaun0Q893descpgwooSpGEqHnIMR_lvZ304lKM",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"api_id\": 97,\r\n    \"new_rank\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/movies/rank",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"movies",
+						"rank"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    const responseData = response.data;\r",
+							"    \r",
+							"    pm.expect(response).to.be.an('object');\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.api_id).to.exist;\r",
+							"    pm.expect(responseData.title).to.exist;\r",
+							"    pm.expect(responseData.poster_path).to.exist;\r",
+							"    pm.expect(responseData.release_date).to.exist;\r",
+							"    pm.expect(responseData.original_language).to.exist;\r",
+							"    pm.expect(responseData.original_title).to.exist;\r",
+							"    pm.expect(responseData.overview).to.exist;\r",
+							"    pm.expect(responseData.popularity).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Release date is in a valid date format\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"\r",
+							"  pm.expect(responseData.data.release_date).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Bearer}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzM2M2M5Nzk4MTg1ZWIzNDAxNTM5NDgiLCJpYXQiOjE3MzE2NTE5NjIsImV4cCI6MTczMTY1NTU2Mn0.Lxlyd-APKpNZNUIqZEj4mIMkchp7hVtxVm0xUKckWFk",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"api_id\": 93\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/movies/details",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"movies",
+						"details"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

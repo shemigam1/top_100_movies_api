@@ -85,7 +85,7 @@ export const rankController = async (
 ) => {
     const input: IRank = {
         user: res.locals.user,
-        api_id: req.body.api_id,
+        old_rank: req.body.old_rank,
         new_rank: req.body.new_rank
     }
 

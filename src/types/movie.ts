@@ -70,16 +70,12 @@ export interface ICache {
 
 export interface IList {
     "userId": Schema.Types.ObjectId | string,
-    "list": [
-        {
-            "api_id": number | Schema.Types.Number,
-            "rank": number
-        }
-    ]
+    "movieId": Schema.Types.ObjectId | string,
+    "rank": number
 }
 
 export interface IRank {
     "user": any
-    "api_id": number
+    "old_rank": number
     "new_rank": number
 }
