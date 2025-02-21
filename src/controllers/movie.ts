@@ -85,7 +85,7 @@ export const rankController = async (
 ) => {
     const input: IRank = {
         user: res.locals.user,
-        api_id: req.body.api_id,
+        old_rank: req.body.old_rank,
         new_rank: req.body.new_rank
     }
 
@@ -105,5 +105,13 @@ export const getMovieDetailsController = async (
     }
 
     const response = await movieFactory().getMovieDetails(input)
+    return res.status(response.code).json(response);
+}
+
+export const MovieNightController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction) => {
+    const response = await movieFactory().MovieNight()
     return res.status(response.code).json(response);
 }
