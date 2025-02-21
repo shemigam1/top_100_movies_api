@@ -107,3 +107,11 @@ export const getMovieDetailsController = async (
     const response = await movieFactory().getMovieDetails(input)
     return res.status(response.code).json(response);
 }
+
+export const MovieNightController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction) => {
+    const response = await movieFactory().MovieNight()
+    return res.status(response.code).json(response);
+}

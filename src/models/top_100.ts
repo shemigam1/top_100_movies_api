@@ -3,7 +3,7 @@ import { IList } from "../types/movie";
 import Movie from "./movie";
 
 const Top100Schema = new Schema<IList>({
-    userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    userId: { type: Schema.Types.ObjectId, required: true, ref: 'User', index: true },
     movieId: { type: Schema.Types.ObjectId, required: true, ref: 'Movie' },
     rank: { type: Number }
     // list: {

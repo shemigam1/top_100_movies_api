@@ -23,16 +23,16 @@ class Movie {
     try {
       const { movieTitle, language, page, include_adult } = input
       try {
-        const cache = await MovieModel.find({ title: movieTitle })
-        if (cache) {
-          return ResultFunction(
-            true,
-            'data fetched sucessfully',
-            200,
-            ReturnStatus.OK,
-            cache
-          );
-        }
+        // const cache = await MovieModel.find({ title: movieTitle })
+        // if (cache) {
+        //   return ResultFunction(
+        //     true,
+        //     'data fetched sucessfully',
+        //     200,
+        //     ReturnStatus.OK,
+        //     cache
+        //   );
+        // }
         const url = search_serializer(input)
         const res = await axios.get(url, options)
 
@@ -40,7 +40,7 @@ class Movie {
 
         const returnData = formatData(data)
 
-        await MovieModel.create(returnData)
+        // await MovieModel.create(returnData)
         return ResultFunction(
           true,
           'data fetched sucessfully',
@@ -50,7 +50,7 @@ class Movie {
         );
 
       } catch (error) {
-        console.log(error);
+        // console.log(error);
 
         return ResultFunction(
           false,
@@ -324,6 +324,30 @@ class Movie {
       );
     }
   }
+
+  public async MovieNight() {
+    try {
+      const data = await this.discover({ page: 1 })
+      const movies = data.data
+      return ResultFunction(
+        true,
+        'Movie Night!!!!',
+        200,
+        ReturnStatus.OK,
+        movies
+      );
+    } catch (error) {
+      return ResultFunction(
+        false,
+        'something went wrong',
+        422,
+        ReturnStatus.NOT_OK,
+        null
+      );
+    }
+  }
 }
+
+
 
 export default Movie
