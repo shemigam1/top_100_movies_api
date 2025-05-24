@@ -7,7 +7,7 @@
 		"module": "commonjs",
 		"forceConsistentCasingInFileNames": true ,
 		"strict": true, 
-		
+		"esModuleInterop": true,
 		"skipLibCheck": true, 
 		"outDir": "./dist"
 	}
